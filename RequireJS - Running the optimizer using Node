@@ -1,0 +1,89 @@
+RequireJS - Running the optimizer using Node
+
+	Install Node.js from https://nodejs.org/en/
+	
+	Download optimizer tool r.js from http://requirejs.org/docs/download.html#rjs
+
+	Assume below will be the final app structure before optimization:
+		├───tools
+		│       build.js
+		│       r.js
+		│
+		└───www
+		    │   app.js
+		    │   index.html
+		    │
+		    ├───app
+		    │       main.js
+		    │       messages.js
+		    │
+		    └───lib
+		            print.js
+		            require.js
+
+	The "tools" folder has nothing to do with the app. The files inside are just for optimization.
+
+	index.html has script tags for require.js and loads app.js via a require call, like so:
+		<!DOCTYPE html>
+		<html>
+		    <head>
+		        <script data-main="app" src="lib/require.js"></script>
+		    </head>
+		    <body>
+		        <h1>Hello World</h1>
+		    </body>
+		</html>
+
+	app.js uses requirejs() to load any other scripts we need to run as:
+		requirejs(['app/main']);
+
+	Again, main.js loads messages.js and print.js via require calls:
+		var messages = require('./messages');
+	    var print = require('print');
+
+	Run the optimizer:
+		Configure the following in the build.js:
+			{
+			    "appDir": "../www",
+			    "mainConfigFile": "../www/app.js",
+			    "dir": "../www-built",
+			    "modules": [
+			        {
+			            "name": "app"
+			        }
+			    ]
+			}
+
+		then just pass the build profile's file name to the optimizer:
+			node r.js -o build.js
+
+
+	After running the optimizaer, the app structure looks as below. The new www-built folder contains all the optimized js files.
+		├───tools
+		│       build.js
+		│       r.js
+		│
+		├───www
+		│   │   app.js
+		│   │   index.html
+		│   │
+		│   ├───app
+		│   │       main.js
+		│   │       messages.js
+		│   │
+		│   └───lib
+		│           print.js
+		│           require.js
+		│
+		└───www-built
+		    │   app.js
+		    │   build.txt
+		    │   index.html
+		    │
+		    ├───app
+		    │       main.js
+		    │       messages.js
+		    │
+		    └───lib
+		            print.js
+		            require.js
